@@ -80,7 +80,7 @@ def ej3(l, n):
 
         half = (start + end) // 2
 
-    if half != len(l):
+    if l[half] != n:
         l.insert(half + 1, n)
         return l
 
