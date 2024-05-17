@@ -14,6 +14,13 @@ int *copy_int(int *dato)
     return num;
 }
 
+char *copy_char(char *dato)
+{
+    char *char_aux = malloc(sizeof(char));
+    *char_aux = *dato;
+    return char_aux;
+}
+
 void destroy(SGNode *node)
 {
     free(node);
@@ -47,13 +54,13 @@ int main()
     add_last_list(list, &dato4, (CopyFunc)copy_int);
     add_last_list(list, &dato5, (CopyFunc)copy_int);
 
-    recorrer_list(list, (VisitorFunc)print_int);
+    recorrer_list(list, (VisitorFunc)print);
     printf("\n");
 
-    sglist_insertar(list, &dato6, (CopyFunc)copy_int, (CompFunc)compar_int);
+    /* sglist_insertar(list, &dato6, (CopyFunc)copy_int, (CompFunc)compar_int);
 
     printf("\n");
-    recorrer_list(list, (VisitorFunc)print_int);
+    recorrer_list(list, (VisitorFunc)print_int); */
 
     sglist_destruir(list, &destroy);
     return 0;

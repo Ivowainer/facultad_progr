@@ -27,12 +27,17 @@ int main()
     slist_add(&list1, 5);
     slist_add(&list1, 4);
 
+    slist_add(&list2, 1);
     slist_add(&list2, 9);
+    slist_add(&list2, 10);
     slist_add(&list2, 8);
 
     slist_add(&list3, 9);
     slist_add(&list3, 5);
+    slist_add(&list3, 1);
+    slist_add(&list3, 1);
     slist_add(&list3, 8);
+    slist_add(&list3, 1);
     slist_add(&list3, 3);
 
     /* slist_concatenar(&list1, list2); */
@@ -51,9 +56,12 @@ int main()
     slist_add_final(&list1, 7);
     slist_add_final(&list1, 8);
 
-    SNode *list4 = slist_intercalar(list1, list2);
+    slist_ordenar(list2, &compare_func2);
+    slist_imprimir(list2);
 
-    slist_imprimir(list4);
+    /* SNode *list4 = slist_intercalar(list1, list2); */
+
+    /* slist_imprimir(list4); */
     /* printf("\n%d", slist_indice(list1, 10));
     printf("\n%d", slist_indice(list1, 5)); */
 

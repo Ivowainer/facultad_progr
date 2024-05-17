@@ -111,7 +111,7 @@ void slist_eliminar(SNode **list, int dato)
     free(aux);
 }
 
-void slist_contiene(SNode *list, int dato)
+int slist_contiene(SNode *list, int dato)
 {
     SNode *aux = list;
 
@@ -119,12 +119,9 @@ void slist_contiene(SNode *list, int dato)
         aux = aux->sig;
 
     if (aux == NULL)
-    {
-        printf("No se encontro el valor\n");
-        return;
-    }
+        return 0;
 
-    printf("%d esta contenida\n", dato);
+    return 1;
 }
 
 int slist_indice(SNode *list, int dato)
@@ -149,7 +146,6 @@ SNode *slist_intersecar(SNode *list1, SNode *list2)
     SNode *newList = NULL;
 
     SNode *aux1 = list1;
-    SNode *aux2 = list2;
 
     SNode *prev_aux2 = list2;
 
@@ -158,9 +154,9 @@ SNode *slist_intersecar(SNode *list1, SNode *list2)
 
     for (int i = 1; i <= long1; i++)
     {
-        for (int j = 1; j <= long2; j++)
+        /* for (int j = 1; j <= long2; j++)
         {
-            if (aux1->dato == aux2->dato)
+            if (aux1->dato == aux2->dato && !slist_contiene(newList, aux1->dato))
             {
                 slist_add(&newList, aux1->dato);
             }
@@ -169,7 +165,9 @@ SNode *slist_intersecar(SNode *list1, SNode *list2)
 
             if (j == long2)
                 aux2 = prev_aux2;
-        }
+        } ERA RE BURRO PERO AHORA NO 🫢🫢*/
+        if (slist_contiene(list2, aux1->dato) && !slist_contiene(newList, aux1->dato))
+            slist_add(&newList, aux1->dato);
 
         aux1 = aux1->sig;
     }

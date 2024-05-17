@@ -15,7 +15,7 @@ int slist_longitud(SNode *node);
 void slist_concatenar(SNode **list1, SNode *list2);
 void slist_insertar(SNode **list, int dato, int posicion);
 void slist_eliminar(SNode **list, int dato);
-void slist_contiene(SNode *list, int dato);
+int slist_contiene(SNode *list, int dato);
 int slist_indice(SNode *list, int dato);
 SNode *slist_intersecar(SNode *list1, SNode *list2);
 SNode *slist_intersecar_custom(SNode *list1, SNode *list2, compare_function);
