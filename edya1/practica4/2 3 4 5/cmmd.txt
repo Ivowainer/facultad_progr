@@ -1,0 +1,1 @@
+gcc -o program.exe ./main.c ./btree.c ./btree.h ./stack.c ./stack.h ./queue.c ./queue.h
