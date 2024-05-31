@@ -185,6 +185,17 @@ int btree_depth(BTree tree, void *data, CompFunc comp)
 {
     int depth = btree_depth_aux(tree, data, comp, 0);
     return btree_nodes_depth(tree, depth);
+    /* if (tree == NULL)
+        return -1;
+    if (comp(tree->data, data))
+        return 0;
+    int izq = btree_depth(tree->left, data, comp);
+    int der = btree_depth(tree->right, data, comp);
+    if (izq != -1)
+        return izq + 1;
+    if (der != -1)
+        return der + 1;
+    return -1; */
 }
 
 int btree_sum(BTree tree)
@@ -216,7 +227,6 @@ void btree_bfs(BTree tree, VisitorFunc visit)
 {
     for (int i = 0; i <= btree_height(tree); i++)
     {
-        /* printf("\nNodes depth in pos: %d: ", i); */
         btree_visit_nodes_depth(tree, visit, i);
     }
 }

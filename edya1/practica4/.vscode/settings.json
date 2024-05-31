@@ -5,6 +5,7 @@
         "tuple": "c",
         "type_traits": "c",
         "utility": "c",
-        "queue.h": "c"
+        "queue.h": "c",
+        "tipos.h": "c"
     }
 }
