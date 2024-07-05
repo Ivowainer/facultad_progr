@@ -26,21 +26,7 @@ static AVL avl_rotate_simple_r(AVL tree)
     return a;
 }
 
-/* static int avl_factor(AVL tree)
-{
-    if (tree == NULL)
-        return 0;
-
-    int izq = avl_altura(tree->left);
-    int der = avl_altura(tree->right);
-
-    if ((izq - der) < -1 || (izq - der) > 1)
-        return izq - der;
-
-    return avl_factor(tree->left) + avl_validar(tree->right);
-} */
-
-int avl_factor_balance(AVL tree)
+int avl_balance_factor(AVL tree)
 {
     if (tree == NULL)
         return 1;
@@ -50,11 +36,11 @@ int avl_factor_balance(AVL tree)
 
 static AVL avl_balancear(AVL tree)
 {
-    int factor_root = avl_factor_balance(tree);
+    int factor_root = avl_balance_factor(tree);
 
     if (factor_root > 1) // está desbalanceado por izquierda
     {
-        if (avl_factor_balance(tree->left) == -1) // Rotacion doble
+        if (avl_balance_factor(tree->left) == -1) // Rotacion doble
             tree->left = avl_rotate_simple_l(tree->left);
 
         tree = avl_rotate_simple_r(tree);
@@ -62,7 +48,7 @@ static AVL avl_balancear(AVL tree)
 
     if (factor_root < -1) // desbalanceado por derecha
     {
-        if (avl_factor_balance(tree->right) == 1) // Rotacion doble
+        if (avl_balance_factor(tree->right) == 1) // Rotacion doble
             tree->right = avl_rotate_simple_r(tree->right);
 
         tree = avl_rotate_simple_l(tree);

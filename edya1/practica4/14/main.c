@@ -45,7 +45,7 @@ int main()
     tree = avl_insert(tree, &data18, copy_int, comp_int);
     tree = avl_insert(tree, &data19, copy_int, comp_int); */
 
-    tree = avl_insert(tree, &data15, copy_int, comp_int);
+    /* tree = avl_insert(tree, &data15, copy_int, comp_int);
     tree = avl_insert(tree, &data8, copy_int, comp_int);
     tree = avl_insert(tree, &data20, copy_int, comp_int);
     tree = avl_insert(tree, &data23, copy_int, comp_int);
@@ -61,7 +61,11 @@ int main()
 
     tree = avl_delete(tree, &data9, comp_int, destr_int);
     tree = avl_delete(tree, &data13, comp_int, destr_int);
-    tree = avl_delete(tree, &data20, comp_int, destr_int);
+    tree = avl_delete(tree, &data20, comp_int, destr_int); */
+
+    tree = avl_insert(tree, &data2, copy_int, comp_int);
+    tree = avl_insert(tree, &data6, copy_int, comp_int);
+    tree = avl_insert(tree, &data4, copy_int, comp_int);
     avl_map(tree, AVL_PRE, visit_int);
     return 0;
 }
