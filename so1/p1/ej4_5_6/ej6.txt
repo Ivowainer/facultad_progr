@@ -1,0 +1,2 @@
+¿Es getchar() una función que hace llamada al sistema?
+No, es parte de la librería estandar de C, donde usa los bufers de entrada gestionados por la biblioteca

@@ -1,0 +1,2 @@
+¿Que pasa cuando un proceso no libera memoria con free() antes de terminar?
+El SO recupera la memoria asignada al proceso. El problema ocurre si el proceso se encuentra mucho tiempo activo consumiendo recursos innecesariamente

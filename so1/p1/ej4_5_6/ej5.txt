@@ -1,0 +1,2 @@
+¿Es free() una llamada al sistema?
+Es una función de la libreria estandar de C, donde marca a la memoria como DISPONIBLE dentro del heap del proceso, para que pueda reutilizarse en futuras asignaciones

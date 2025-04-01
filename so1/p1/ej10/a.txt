@@ -1,5 +1,0 @@
-1. Recibe un argumento, un numero "n"
-2. Debe tener al menos dos procesos (o más)
-Dado el n, tiene que imprimir de a tres elementos entre 1 y n, de manera aleatoria 
-
-NO SE PUEDE REPETIR Y LOS VA CONSUMIENDO
