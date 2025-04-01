@@ -1,0 +1,11 @@
+SV:
+- Definimos archivos de comunicación, CLI_NAME y SV_NAME, respectivamente socketaddr_un cli_name, sv_name (setteamos estructura y asociamos a los archivos). Deslinkeamos el sv_name (arrancar limpio)
+- Con socket, sv_socket será el socket que establecemos en el servidor, retorna FD
+- BIND IMPORTANTISIMO, nos permite "unir" el client->sv, le (sv_socket, sv_name (archivo SV_NAME), …)
+- con listen escuchamos en el sv_socket y setteamos la cant. de request q puede recibir
+- cli_sock será el accept del sv_sock y el cli_name (archivo de comunicacón CLI_NAME)
+
+CLIENT:
+- Definimos archivos de comunicación, CLI_NAME y SV_NAME, respectivamente sockaddr_un cli_name, sv_name (setteamos escritura y asociamos a los archivos). Deslinkeamos el cli_name (arrancar limpio el client)
+- Con socket, cli_socket será el socket establecido del cliente para el servidor
+- Conectaremos el cli_sock al archivo (address)
