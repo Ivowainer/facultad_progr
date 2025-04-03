@@ -36,7 +36,7 @@ int main()
         // args
         int args_len = 1;
         args[0] = cmd;
-        while (((recv = strtok(NULL, " ")) != 0) && (*recv != '>'))
+        while (((recv = strtok(NULL, " ")) != 0) && (strcmp(&recv, '>') == 0) && (strcmp(&recv, '|') == 0))
             args[args_len++] = recv;
 
         args[args_len] = NULL;
@@ -44,9 +44,14 @@ int main()
             args[args_len - 1][strlen(args[args_len - 1]) - 1] = '\0'; // <-- Sacar el \n del ultimo arg
 
         // args ">"
-        int is_file = recv == NULL ? 0 : 1;
+        int is_especial = recv == NULL ? 0 : 1;
+
+        printf("LASCHAR: %s, IS_PIPE: %d, IS_MAJOR: %d\n", recv, *recv == '|', *recv == '>');
+
+        return 0;
+
         int fd;
-        if (is_file == 1)
+        if (is_especial == 1)
         {
             recv = strtok(NULL, " ");
             recv[strlen(recv) - 1] = '\0';
@@ -57,7 +62,7 @@ int main()
         pid_t pid = fork();
         if (pid == 0)
         {
-            if (is_file == 1)
+            if (is_especial == 1)
             {
                 dup2(fd, STDOUT_FILENO);
                 close(fd);
@@ -70,9 +75,8 @@ int main()
         }
         else
         {
+            close(fd);
             wait(NULL);
-            if (is_file == 1)
-                close(fd);
         }
     }
 
