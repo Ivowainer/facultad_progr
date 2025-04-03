@@ -28,7 +28,7 @@ int main()
         // main command
         fgets(recv, 256, stdin);
         strtok(recv, " ");
-        if (strcmp("\n", &recv[strlen(recv) - 1]) == 0)
+        if (recv[strlen(recv) - 1] == '\n')
             recv[strlen(recv) - 1] = '\0'; // <-- Sacar el \n
 
         strcat(cmd, recv);
@@ -36,7 +36,7 @@ int main()
         // args
         int args_len = 1;
         args[0] = cmd;
-        while (((recv = strtok(NULL, " ")) != 0) && (strcmp(recv, ">") != 0))
+        while (((recv = strtok(NULL, " ")) != 0) && (*recv != '>'))
             args[args_len++] = recv;
 
         args[args_len] = NULL;
@@ -50,13 +50,19 @@ int main()
         {
             recv = strtok(NULL, " ");
             recv[strlen(recv) - 1] = '\0';
-            fd = open(recv, O_RDWR | O_CREAT, 0666); // <--- By StackOverflow )?)?
+            fd = open(recv, O_CREAT | O_WRONLY | O_TRUNC, 0644);
         }
 
         // exec commands
         pid_t pid = fork();
         if (pid == 0)
         {
+            if (is_file == 1)
+            {
+                dup2(fd, STDOUT_FILENO);
+                close(fd);
+            }
+
             int status_exec = execvp(cmd, args);
 
             if (status_exec == -1)
@@ -64,17 +70,8 @@ int main()
         }
         else
         {
-
+            close(fd);
             wait(NULL);
-            if (is_file == 1)
-            {
-                printf("ISFILE: %d\n", is_file);
-
-                char cfile;
-                dup2(1, fd);
-                /* read(1, &cfile, 1); */
-                /* printf("CHAR: %c\n", cfile); */
-            }
         }
     }
 
