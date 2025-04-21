@@ -1,0 +1,7 @@
+a. Si, por más que consideremos un unico procesador, el problema persiste, pues, si bien nos arregla un gran problema (store buffering), sigue ocurriendo que dos threads quieran acceder a un mismo recurso y haya desincronización
+
+b. En teoria, no. Nuevamente, nos ahorra el problema de store buffering, por lo tanto, no hay riesgo de ejecutar dos instrucciones al mismo tiempo, pues, no hay multiples nucleos con caché. Pero en la practica, el compilador se encarga de optimizar el codigo, por eso es importante usar "volatile" para indicarle al mismo QUE NO modifique o mueva de lugar la instrucción
+
+c. Veamos que incl es una insutrucción atomica, pero el acceso a la variable "p" no. Entonces, si no se utiliza "lock" delante, no podría ser una instrucción atomica (por el acceso a la variable), por lo que puede llegar a generar un problema de Race Coindition
+
+d. 
