@@ -13,26 +13,23 @@ preguntas = [
     "¿Qué es un deadlock?",
     "¿Qué es un thread?",
     "¿Qué diferencias hay entre un proceso y un hilo?",
-    "¿Qué es la memoria compartida?",
     "¿Qué mecanismos de sincronización conoces?",
     "¿Qué es busy waiting?",
     "¿Cómo funciona el algoritmo de Peterson?",
     "¿Cómo funciona el algoritmo de la Panadería de Lamport?",
-    "¿Qué pasa si dos procesos escriben en el mismo archivo sin sincronización?",
-    "¿Qué tipos de estados puede tener un proceso?",
     "¿Qué ventajas tiene usar threads sobre procesos?",
     "¿Que es la concurrencia y que diferencia tiene con el paralelismo?",
     "¿Que es Store Buffering?",
     "¿Que es Fence (Barrera de memoria)?",
     "¿Para que sirve volatile?",
-    "Nombrar instrucciones de pthread mutex"
+    "Nombrar instrucciones de pthread mutex y para que sirven"
 ]
 
 def timba_preguntas():
     random.shuffle(preguntas)
 
     while preguntas:
-        input("Apreta enter")
+        input("")
         pregunta = preguntas.pop()
         print(pregunta)
 
