@@ -1,0 +1,7 @@
+SECUENCIAL:
+200x200: real -> 0.022s
+500x500: real -> 0.264s
+1000x1000: real -> 2.117s
+
+PARALLEL:
+1000x1000: real -> 0.342s
