@@ -1,0 +1,2 @@
+main.c -> real    0m8.852s
+secuencial.c -> real    0m29.913s

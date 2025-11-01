@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "hash.h": "c"
+    },
+    "makefile.configureOnOpen": false,
+    "C_Cpp.vcFormat.space.beforeBlockOpenBrace": false,
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.type": "sameLine",
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.lambda": "sameLine",
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "sameLine",
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "sameLine"
+}
