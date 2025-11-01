@@ -3,25 +3,6 @@
 unsigned long fact1(unsigned long);
 unsigned long fact2(unsigned long);
 
-unsigned long fact2(unsigned long x)
-{
-    unsigned long acc = 1;
-    for (; x > 1; x--)
-    {
-        acc *= x;
-    }
-    return acc;
-}
-
-unsigned long fact1(unsigned long x)
-{
-    if (x <= 1)
-    {
-        return x;
-    }
-    return x * fact1(x - 1);
-}
-
 int main(void)
 {
     unsigned long x;
