@@ -1,0 +1,57 @@
+1) El proyecto Nachos toma la decisión de diseño de emular una CPU (especificamente una MIPS R2000/R3000) en lugar de ejcutar el código de usuario directamente en el procesador real por varias razones fundamentales:
+	- En un sistema operativo real, el comportamiento depende del hardware físico y de interrupciones externas que ocurren en tiempos no deterministas. Al emular la CPU, se puede asegurar que una ejecución sea igual a la anterior. Esto es vital para depurar errores de concurrencia (como condiciones de carrera) que de otro modo sería mucho más dificil de reproducir.
+	Además, Nachos utiliza un "reloj simulado". El tiempo solo avanza cuando se ejecutan instrucciones o ocurren eventos específicos, lo que permite un control total sobre la planificiación 
+	- Soi Nachos correría al usar una CPU real para ejecutar programas de usuario de forma nativa, un error en el código (como un puntero nulo o salto a nuna dirección invalida) podría colapsar no solo a Nachos, sino potencialmente afectar al SO host
+En resumen, se podría decir que Nachos corre sobre este simulador para debuggear y sencillez en el aprendizaje (recordemos que está creado con el fin de aprendizaje).
+
+2) La maquina MIPS de Nachos tiene 31 páginas de memoria física (según la documentación oficial), pero siguiendo la variable DEFAULT_NUM_PHYS_PAGES (en mmhu.hh) en la modificación de la FCEIA, tiene 32. Luego, cada página tiene un tamaño de 128 bytes. Por lo tanto, el tamaño total designado a la maquina simulada para Nachos es de 128*32 = 4096 bytes (4 KB)
+
+3) Como se indica en la documentación, para cambiar la cant. de memoria asignada a la maquina simulada, debemos modificar la variable NumPhysPages (para cambiar la cant. de páginas físicas) y la variable PageSize (para cambiar el tamaño de cada página) en machine.h. Pero en la modificación de la FCEIA, debemos cambiar las variables DEFAULT_NUM_PHYS_PAGES en mmu.h y SECTOR_SIZE en disk.hh. Otra forma alternativa, podría ser ejecutar Nachos con la bandera "-m" indicando la cant. de páginas a utilizar. 
+
+4) En este Nachos, el disco simulado tiene una capacidad de 131072 bytes (128 KB). Esto se obtiene a partir de: 32 pistas y 32 sectores por pista, lo que da un total de 32 * 32 = 1024 sectores. Como cada sector almacena 128 bytes, la capacidad total es 1024 * 128 = 131072 bytes.
+
+5) Veamos que la maquina virtual reconoce opcodes hasta MAX_OPCODE = 63, según encoding.hh. Pero si observamos en mips_sim.cc, veremos que en el switch donde se contempla cada instrucción, hay un total de 57 instrucciones implementadas.
+
+6) La función main de todo el sistema operativo está en dentro en el archivo threads/main.cc. Observemos que el arranque de userprog también depende del mismo main.cc mencionado anteriormente, como podes observar en su archivo Makefile (donde con -D crea la macro global y permite ejecutar el #ifdef del USER_PROGR en el main.cc). Es decir, existe un único punto de arranque para Nachos, siendo este el main.cc de threads.  
+
+7) 
+	- main llama a Initialize, que está en threads/system.cc; a su vez, Initialize llama a Assert (que está en lib/assert.cc), a la función RandomInit perteneciente al namespace SystemDep que está en machine/system_dep.cc, a los metodos SetFlags y SetOpts de la clase debug en debug.cc, al constructor (considerado un metodo) al instanciar la clase Timer de machine/timer.cc, al metodo enable perteneciente a la clase Interrput en machine/interrupt.cc, al la función CallOnUserAbort perteneciente a la namespace SystemDep, a la función SetExceptionHandlers de userprogr/exception.cc y a los metodos constructores de Machine (perteneciente a machine/machine.cc), SynchDisk (de filesys/synch_disk.cc) y FileSystem (filesys/file_system.cc)
+	- main llama a la función DEBUG de lib/utility.hh
+	- main llama a la función SysInfo de threads/sys_info.cc
+	- main llama a la función PrintVersion del mismo archivo
+	- main llama a la función ThreadTest de threads/thread_test.cc y este a su vez llama a DEBUG (mencionado anteriormente), Choose y Run del mismo archivo 
+
+8) 
+	- La macro DEBUG llama al metodo print de la clase Debug, con los parametros del subdirectorio (que pueden ser t (threads), d (disk), etc), string a imprimir y los parametros del print. Esta macro imprime unicamente si se ejecuta nachos con la bandera '-d' o '+'.
+	- La macro ASSERT está definida en lib/assert.h, se encarga de llamar al Assert (función de ñob/assert.cc) con la condición pasada a través de los parametros de la misma. Si la condición no se cumple, imprime error con expresión + ubicación y aborta el proceso (corta Nachos)
+
+9) Como indican los comentarios en main.cc, la bandera '-d' controla que subsistemas emiten los mensajes de depuración (por ejemplo t, i, dd, f, a, e o + para todos), mientras que -do elige cómo se muestran los mensajes de depuración y cómo se comportan al imprimir (el formato y comportamiento) (por ejemplo location o l, function o f, sleep o s, interactive o i)
+
+10) Veamos que las constantes no están definidas en un .hh o un .cc, sino como macros en los makefiles pasadas con -D (define). Entonces, 
+	- USER_PROGRAM está definida en userprogr/Makefile, filesys/Makefile y vmem/Makefile
+	- FILESYS_NEEDED está definida en userprog/Makefile, filesys/Makefile y vmem/Makefile
+	- FILESYS_STUB está definida en userprog/Makefile y vmem/Makefile
+
+11) Nachos admite los siguientes argumentos (según main.cc)
+	-d <debuglfags>
+	-do <debugopts>
+	-rs <seed>
+	-z
+	-i 
+	De threads:
+	-tt
+	-tN
+	De user programs:
+	-s
+	-m <num phys pages>
+	-x <nachos file>
+	-tc <consoleIn> <consoleOut>
+	De filesystem:
+	-f
+	-cp <unix file> <nachos file>
+	-pr <nachos file>
+	-rm <nachos file>
+	-ls
+	-D
+
+	El efecto del -rs consiste en inicializar el generador pseudoaleatorio con la seed que le pasás mediante SystemDep::RandomInit en machine/system_dep.cc. Con esto, los interrupts de time ocurren en instantes pseudoaleatorios (pero repetibles con la misma seed), en machine/timer.cc
