@@ -55,3 +55,176 @@ En resumen, se podría decir que Nachos corre sobre este simulador para debuggea
 	-D
 
 	El efecto del -rs consiste en inicializar el generador pseudoaleatorio con la seed que le pasás mediante SystemDep::RandomInit en machine/system_dep.cc. Con esto, los interrupts de time ocurren en instantes pseudoaleatorios (pero repetibles con la misma seed), en machine/timer.cc
+
+12) 
+En sys_info.cc
+
+#include "mmu.hh"
+#include "disk.hh"
+#include "disk.cc"
+
+.
+.
+.
+
+printf("System information.\n");
+    printf("\n\
+General:\n\
+  Nachos release: %s %s.\n\
+  Option definitions: %s\n",
+      PROGRAM, VERSION, OPTIONS);
+    printf("\n\
+Memory:\n\
+  Page size: %d bytes.\n\
+  Number of pages: %d.\n\
+  Number of TLB entries: %d.\n\
+  Memory size: %d bytes.\n", PAGE_SIZE, DEFAULT_NUM_PHYS_PAGES, TLB_SIZE, PAGE_SIZE * DEFAULT_NUM_PHYS_PAGES);
+    printf("\n\
+Disk:\n\
+  Sector size: %d bytes.\n\
+  Sectors per track: %d.\n\
+  Number of tracks: %d.\n\
+  Number of sectors: %d.\n\
+  Disk size: %d bytes.\n", SECTOR_SIZE, SECTORS_PER_TRACK, NUM_TRACKS, NUM_SECTORS, NUM_SECTORS * SECTOR_SIZE);
+    printf("\n\
+Filesystem:\n\
+  Sectors per header: %u.\n\
+  Maximum file size: %u bytes.\n\
+  File name maximum length: %u.\n\
+  Free sectors map size: %u bytes.\n\
+  Maximum number of dir-entries: %u.\n\
+  Directory file size: %u bytes.\n",
+      NUM_DIRECT, MAX_FILE_SIZE, FILE_NAME_MAX_LEN,
+      FREE_MAP_FILE_SIZE, NUM_DIR_ENTRIES, DIRECTORY_FILE_SIZE);
+
+13) Como se indican en los comentarios, la clase List consiste en una lista simplemente enlazada, en cambio, la clase SynchList describe que es una lista simplemente enlazada pero que permite acceder a ella unicamente por cada thread, además, los threads que intenten eliminar un item de la lista, deberán esperar a que la lista tenga un item en ella.
+
+14) 
+En thread_test_simple.cc
+	Thread *secondThread = new Thread("2nd");
+    Thread *thirdThread = new Thread("3rd");
+    Thread *fourthThread = new Thread("4th");
+    Thread *fifthThread = new Thread("5th");
+    secondThread->Fork(SimpleThread, NULL);
+    thirdThread->Fork(SimpleThread, NULL);
+    fourthThread->Fork(SimpleThread, NULL);
+    fifthThread->Fork(SimpleThread, NULL);
+
+	SimpleThread(NULL);
+
+15)
+thread_test_simple.cc
+#include "thread_test_simple.hh"
+#include "system.hh"
+#include "semaphore.hh"
+
+#include <stdio.h>
+#include <string.h>
+
+Semaphore *sem;
+Semaphore *sem_end;
+void SimpleThread(void *name_)
+{
+
+    // If the lines dealing with interrupts are commented, the code will
+    // behave incorrectly, because printf execution may cause race
+    // conditions.
+    #ifdef SEMAPHORE_TEST
+        sem->P();
+    #endif
+    
+    for (unsigned num = 0; num < 10; num++) {
+
+        printf("*** Thread `%s` is running: iteration %u\n", currentThread->GetName(), num);
+        currentThread->Yield();
+    }
+    
+    printf("!!! Thread `%s` has finished SimpleThread\n", currentThread->GetName());
+
+    #ifdef SEMAPHORE_TEST
+        sem->V();
+        sem_end->V();
+    #endif
+    
+}
+
+void ThreadTestSimple()
+{
+    #ifdef SEMAPHORE_TEST
+        sem = new Semaphore("SEMAPHORE_TEST tt", 3);    
+        sem_end = new Semaphore("SEMAPHORE_END_TEST tt", 0);
+    #endif
+
+    Thread *secondThread = new Thread("2nd");
+    Thread *thirdThread = new Thread("3rd");
+    Thread *fourthThread = new Thread("4th");
+    Thread *fifthThread = new Thread("5th");
+    secondThread->Fork(SimpleThread, NULL);
+    thirdThread->Fork(SimpleThread, NULL);
+    fourthThread->Fork(SimpleThread, NULL);
+    fifthThread->Fork(SimpleThread, NULL);
+
+    //the "main" thread also executes the same function
+    SimpleThread(NULL);
+
+   //Wait for all threads to finish if needed (4 is the quantity of threads without the main Thread)
+   #ifdef SEMAPHORE_TEST
+    for(int i = 0; i < 4; i++)
+        sem_end->P();
+    printf("Test finished\n");
+   #endif
+}
+
+
+Y en el makefile de threads agregamos -DSEMAPHORE_TEST en DEFINES. Además, nos dimos la libertad de definir otro semaforo de finalización, pues si este no existiera, ocurre que al finalizar 3 hilos, empiezan a ejecutarse los otros 2 pero el hilo principal no espera a que estos terminen; por lo que decidimos introducir este semaforo, que cuenta la cant. de hilos que terminaron su ejecución y al final decidimos decrementar el mismo 4 veces (sin contar el thread main) para que espere a que se terminen de ejecutar todos.
+
+16) 
+thread_test_simple.cc 
+void SimpleThread(void *name_){
+	#ifdef SEMAPHORE_TEST
+        sem->P();
+        DEBUG('s', "SEMAPHORE_TEST | Thread `%s` decrement (-) the semaphore\n", currentThread->GetName());
+    #endif
+
+	...
+
+	#ifdef SEMAPHORE_TEST
+        DEBUG('s', "SEMAPHORE_TEST | Thread `%s` increment (+) the semaphore\n", currentThread->GetName());
+        sem->V();
+        sem_end->V();
+    #endif
+}   
+
+17)
+thread_test_garden.cc
+currentThread->Yield();
+int temp = count;
+printf("Turnstile %u yielding with temp=%u.\n", *n, temp);
+printf("Turnstile %u back with temp=%u.\n", *n, temp);
+count = temp + 1;
+currentThread->Yield();
+
+Si analizamos el codigo, veremos que ocurre el problema al hacer el cambio de contexto (con el Yield). Entonces, podemos solucionar el problema moviendo la variable temp para obtener el valor de count y modificarlo, sin hacer cambio de contexto de por medio, es decir, sería una porción de código atomica
+
+18) Creamos el archivo thread_test_garden_sem.cc y thread_test_garden_sem.hh, agregamos ambos a Makefile.common
+
+thread_test_garden_sem.cc
+static Semaphore *sem;
+
+static void Turnstile(void *n_)
+{
+    unsigned *n = (unsigned *) n_;
+
+    for (unsigned i = 0; i < ITERATIONS_PER_TURNSTILE; i++) {
+        sem->P();
+        int temp = count;
+        printf("Turnstile %u yielding with temp=%u.\n", *n, temp);
+        currentThread->Yield();
+        printf("Turnstile %u back with temp=%u.\n", *n, temp);
+        count = temp + 1;
+        sem->V();
+        currentThread->Yield();
+    }
+    printf("Turnstile %u finished. Count is now %u.\n", *n, count);
+    done[*n] = true;
+}
