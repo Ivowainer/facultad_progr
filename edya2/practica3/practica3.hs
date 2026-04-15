@@ -1,3 +1,5 @@
+import Data.Char (digitToInt)
+
 {--- ERJERCICIO 2 ---}
 type Linea = (String, Int)
 
@@ -126,9 +128,35 @@ concatCL (Consnoc x (Consnoc a list b) y) = concatCL (Consnoc (appendCL x a) Emp
 
 {- 4 -}
 data Exp = Lit Int | Add Exp Exp | Sub Exp Exp | Prod Exp Exp | Div Exp Exp
+    deriving Show 
 eval :: Exp -> Int
 eval (Lit a) = a
 eval (Add x y) = (eval x) + (eval y)
 eval (Sub x y) = (eval x) - (eval y)
 eval (Prod x y) = (eval x) * (eval y)
-eval (Div x y) = floor ((eval x) / (eval y))
+eval (Div x y) = div (eval x) (eval y)
+
+{- 5 -}
+-- a
+{- Suponemos que el string entrante está bien definido -}
+sacarEspacios :: String -> String
+sacarEspacios [] = []
+sacarEspacios (c : str) = if c == ' ' then sacarEspacios str else c : sacarEspacios str
+
+parseRPNAux :: String -> [Exp] -> Exp
+parseRPNAux [] (x : stack) = x
+parseRPNAux (c : str) [] = parseRPNAux str [(Lit (digitToInt c))]
+parseRPNAux (c : str) [x] = parseRPNAux str ((Lit (digitToInt c)) : [x])
+parseRPNAux (c : str) (n1 : n2 : stack) 
+    | c == '-'      = parseRPNAux str ((Sub n2 n1) : stack)
+    | c == '+'      = parseRPNAux str ((Add n2 n1) : stack)
+    | c == '/'      = parseRPNAux str ((Div n2 n1) : stack)
+    | c == '*'      = parseRPNAux str ((Prod n2 n1) : stack)
+    | otherwise     = parseRPNAux str ((Lit (digitToInt c)) : (n1 : n2 : stack))
+
+parseRPN :: String -> Exp
+parseRPN str = parseRPNAux (sacarEspacios str) []
+
+-- b
+evalRPN :: String -> Int
+evalRPN str = eval (parseRPN str)
