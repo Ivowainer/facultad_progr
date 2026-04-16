@@ -108,7 +108,7 @@ sacarTailCL (Consnoc x list y) = snocHeadCL list x
 inits :: CList a -> CList (CList a)
 inits EmptyCL = EmptyCL
 inits (CUnit x) = CUnit (CUnit x) -- [1] -> [[1]]
-inits (Consnoc x list y) = snocCL (inits (sacarTailCL (Consnoc x list y))) (Consnoc x list y)   -- [1, 2, 3] -> [[1], [1, 2], [1, 2, 3]]
+inits c@(Consnoc x list y) = snocCL (inits (sacarTailCL c)) c   -- [1, 2, 3] -> [[1], [1, 2], [1, 2, 3]]
 
 -- d
 lasts :: CList a -> CList (CList a)
