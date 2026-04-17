@@ -143,19 +143,19 @@ sacarEspacios :: String -> String
 sacarEspacios [] = []
 sacarEspacios (c : str) = if c == ' ' then sacarEspacios str else c : sacarEspacios str
 
-parseRPNAux :: String -> [Exp] -> Exp
+parseRPNAux :: [String] -> [Exp] -> Exp
 parseRPNAux [] (x : stack) = x
-parseRPNAux (c : str) [] = parseRPNAux str [(Lit (digitToInt c))]
-parseRPNAux (c : str) [x] = parseRPNAux str ((Lit (digitToInt c)) : [x])
+parseRPNAux (c : str) [] = parseRPNAux str [(Lit (read c :: Int))]
+parseRPNAux (c : str) [x] = parseRPNAux str ((Lit (read c :: Int)) : [x])
 parseRPNAux (c : str) (n1 : n2 : stack) 
-    | c == '-'      = parseRPNAux str ((Sub n2 n1) : stack)
-    | c == '+'      = parseRPNAux str ((Add n2 n1) : stack)
-    | c == '/'      = parseRPNAux str ((Div n2 n1) : stack)
-    | c == '*'      = parseRPNAux str ((Prod n2 n1) : stack)
-    | otherwise     = parseRPNAux str ((Lit (digitToInt c)) : (n1 : n2 : stack))
+    | c == "-"      = parseRPNAux str ((Sub n2 n1) : stack)
+    | c == "+"      = parseRPNAux str ((Add n2 n1) : stack)
+    | c == "/"      = parseRPNAux str ((Div n2 n1) : stack)
+    | c == "*"      = parseRPNAux str ((Prod n2 n1) : stack)
+    | otherwise     = parseRPNAux str ((Lit (read c :: Int)) : (n1 : n2 : stack))
 
 parseRPN :: String -> Exp
-parseRPN str = parseRPNAux (sacarEspacios str) []
+parseRPN str = parseRPNAux (words str) []
 
 -- b
 evalRPN :: String -> Int
